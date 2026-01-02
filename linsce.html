@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل نهایی لایسنس | هامان سرور</title>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <style>
+        :root {
+            --primary: #4338ca;
+            --success: #059669;
+            --dark-blue: #1e1b4b;
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            font-family: Vazirmatn, sans-serif;
+            background: radial-gradient(circle at center, #1e1b4b, #020617);
+            color: #e2e8f0;
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border-radius: 28px;
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        }
+
+        .card {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        h1 { font-size: 20px; text-align: center; color: #fff; margin-bottom: 5px; }
+        .subtitle { text-align: center; font-size: 12px; color: #818cf8; margin-bottom: 25px; display: block; }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: 2px solid #334155;
+            background: #0f172a;
+            color: #fff;
+            font-family: Vazirmatn;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .btn-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; }
+        
+        button {
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: Vazirmatn;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-gen { background: var(--primary); color: white; }
+        .btn-util { background: #334155; color: white; }
+        .btn-verify { background: var(--success); color: white; width: 100%; margin-top: 10px; }
+
+        #output {
+            background: #000;
+            padding: 15px;
+            border-radius: 12px;
+            height: 180px;
+            overflow-y: auto;
+            direction: ltr;
+            color: #10b981;
+            font-family: monospace;
+            margin-top: 15px;
+            white-space: pre-wrap;
+            border: 1px solid #1e293b;
+        }
+
+        .result-decode {
+            margin-top: 10px;
+            padding: 15px;
+            background: #020617;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: bold;
+            min-height: 40px;
+        }
+
+        .footer { text-align: center; font-size: 11px; color: #64748b; margin-top: 25px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🚀 مدیریت لایسنس رایان طرح</h1>
+    <span class="subtitle">بهینه شده برای دیتابیس هامان سرور</span>
+
+    <div class="card">
+        <input type="number" id="planNum" placeholder="شماره پلن را وارد کنید">
+        <div class="btn-row">
+            <button class="btn-gen" onclick="generate()">ساخت ۳۰۰ کد</button>
+            <button class="btn-util" onclick="copy()">کپی</button>
+            <button class="btn-util" onclick="download()">دانلود TXT</button>
+        </div>
+        <div id="output">کدها اینجا نمایش داده می‌شوند...</div>
+    </div>
+
+    <div class="card">
+        <input type="text" id="verifyInput" placeholder="کد را برای دیکود وارد کنید">
+        <button class="btn-verify" onclick="verify()">🔍 رمزگشایی کامل</button>
+        <div id="verifyResult" class="result-decode">نتیجه...</div>
+    </div>
+
+    <div class="footer">
+        طراحی اختصاصی با فونت وزیر | ۲۰۲۶
+    </div>
+</div>
+
+<script>
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+    function generate() {
+        const p = document.getElementById('planNum').value;
+        if(!p) return alert("شماره پلن الزامی است! 😊");
+
+        let res = [];
+        for(let i=0; i<300; i++) {
+            let r = '';
+            for(let j=0; j<3; j++) r += chars.charAt(Math.floor(Math.random() * chars.length));
+            let raw = r + "-" + p + "-1";
+            let b64 = btoa(raw).replace(/=/g, '');
+            res.push(b64);
+        }
+        document.getElementById('output').innerText = res.join('\n');
+    }
+
+    function verify() {
+        let code = document.getElementById('verifyInput').value.trim();
+        const resDiv = document.getElementById('verifyResult');
+        try {
+            while (code.length % 4 !== 0) code += '=';
+            let decoded = atob(code);
+            resDiv.innerHTML = `محتوای کد: <span style="color:#818cf8">${decoded}</span>`;
+            resDiv.style.borderColor = "#059669";
+        } catch(e) {
+            resDiv.innerHTML = "❌ کد نامعتبر!";
+            resDiv.style.borderColor = "#ef4444";
+        }
+    }
+
+    function copy() {
+        const t = document.getElementById('output').innerText;
+        navigator.clipboard.writeText(t).then(() => alert("کپی شد! ✅"));
+    }
+
+    function download() {
+        const content = document.getElementById('output').innerText;
+        const plan = document.getElementById('planNum').value || 'none';
+        
+        if (content.includes("نمایش داده می‌شوند")) {
+            alert("اول کدها رو بساز رفیق! 😊");
+            return;
+        }
+
+        const element = document.createElement('a');
+        const file = new Blob([content], {type: 'text/plain'});
+        element.href = URL.createObjectURL(file);
+        element.download = `plan-${plan}-codes.txt`;
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element); // پاکسازی بعد از دانلود
+    }
+</script>
+
+</body>
+</html>
